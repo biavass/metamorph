@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Transforme vídeos virais do TikTok em prompts de IA">
+    <title>Metamorph - Image to Prompt Generator</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#7c3aed">
+    <link rel="manifest" href="manifest.json">
+   <!-- <link rel="apple-touch-icon" href="icon-192.png"> -->
+    
+    <link rel="stylesheet" href="styles.css">
+
+    <link rel="icon" href="data:,">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 text-white">
+    
+    <!-- Header -->
+    <header class="border-b border-white/10 backdrop-blur-sm bg-black/20">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="sparkles" class="w-8 h-8 text-purple-400"></i>
+                <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    Metamorph
+                </h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm">
+                    <span class="text-sm">Créditos: <strong id="credits-display">5</strong></span>
+                </div>
+                <button id="buy-credits-btn" class="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-sm font-semibold hover:shadow-lg transition-all">
+                    Comprar Créditos
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-12">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold mb-4">
+                Transforme Vídeos Virais em Prompts de IA
+            </h2>
+            <p class="text-xl text-purple-200">
+                Capture o estilo de qualquer animação viral do TikTok e recrie com IA
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Upload Area -->
+            <div class="space-y-4">
+                <div id="drop-zone" class="border-2 border-dashed border-purple-400/50 rounded-2xl p-8 text-center hover:border-purple-400 transition-all bg-black/20 backdrop-blur-sm cursor-pointer">
+                    <div id="upload-placeholder">
+                        <i data-lucide="upload" class="w-16 h-16 mx-auto mb-4 text-purple-400"></i>
+                        <p class="text-lg mb-2">Arraste uma imagem ou clique para enviar</p>
+                        <p class="text-sm text-purple-300">PNG, JPG até 10MB</p>
+                    </div>
+                    <div id="image-preview" class="hidden space-y-4">
+                        <img id="preview-img" class="max-h-64 mx-auto rounded-lg shadow-2xl" alt="Preview">
+                        <button id="change-image-btn" class="text-purple-300 hover:text-purple-200 text-sm underline">
+                            Trocar imagem
+                        </button>
+                    </div>
+                    <input type="file" id="file-input" accept="image/*" class="hidden">
+                </div>
+
+                <button id="generate-btn" disabled class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                    <i data-lucide="wand-2" class="w-5 h-5"></i>
+                    <span id="generate-btn-text">Gerar Prompt (1 crédito)</span>
+                </button>
+
+                <div id="error-message" class="hidden p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200"></div>
+            </div>
+
+            <!-- Result Area -->
+            <div class="space-y-4">
+                <div class="bg-black/20 backdrop-blur-sm rounded-2xl p-6 border border-white/10 min-h-[300px]">
+                    <div id="prompt-placeholder" class="flex flex-col items-center justify-center h-full text-purple-300">
+                        <i data-lucide="wand-2" class="w-16 h-16 mb-4 opacity-50"></i>
+                        <p class="text-center">Seu prompt aparecerá aqui</p>
+                    </div>
+
+                    <div id="prompt-result" class="hidden space-y-4">
+                        <div class="flex items-center gap-2 text-green-400 mb-4">
+                            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                            <span class="font-semibold">Prompt Gerado!</span>
+                        </div>
+                        <div class="bg-white/5 rounded-lg p-4 mb-4 max-h-48 overflow-y-auto">
+                            <p id="prompt-text" class="text-purple-100 leading-relaxed"></p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="copy-btn" class="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-lg font-semibold transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                                <span id="copy-btn-text">Copiar Prompt</span>
+                            </button>
+                            <button id="freepik-btn" class="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-lg rounded-lg font-semibold transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                                Gerar no Freepik
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instructions -->
+                <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6">
+                    <h3 class="font-bold mb-3 flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                        Como usar:
+                    </h3>
+                    <ol class="space-y-2 text-sm text-purple-200">
+                        <li>1. Encontre um vídeo viral no TikTok feito por IA</li>
+                        <li>2. Tire um print da melhor frame do vídeo</li>
+                        <li>3. Faça upload da imagem aqui</li>
+                        <li>4. Gere o prompt e use no Freepik para recriar!</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="mt-16 grid md:grid-cols-3 gap-6">
+            <div class="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+                <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
+                    <i data-lucide="wand-2" class="w-6 h-6 text-purple-400"></i>
+                </div>
+                <h3 class="font-bold mb-2">IA Avançada</h3>
+                <p class="text-sm text-purple-200">
+                    Análise profunda de estilos virais usando a API do Freepik
+                </p>
+            </div>
+            <div class="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+                <div class="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center mb-4">
+                    <i data-lucide="sparkles" class="w-6 h-6 text-pink-400"></i>
+                </div>
+                <h3 class="font-bold mb-2">Resultados Instantâneos</h3>
+                <p class="text-sm text-purple-200">
+                    Gere prompts profissionais em segundos
+                </p>
+            </div>
+            <div class="bg-black/20 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+                <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
+                    <i data-lucide="check-circle-2" class="w-6 h-6 text-blue-400"></i>
+                </div>
+                <h3 class="font-bold mb-2">Integração Freepik</h3>
+                <p class="text-sm text-purple-200">
+                    Vá direto para o gerador após copiar o prompt
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
