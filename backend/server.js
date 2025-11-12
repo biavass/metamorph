@@ -11,8 +11,9 @@ const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://127.0.0.1:5500',
-  methods: ['POST', 'GET']
+  origin: '*', // Por enquanto permite tudo
+  methods: ['POST', 'GET'],
+  credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
 
